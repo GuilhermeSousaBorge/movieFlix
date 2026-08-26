@@ -1,0 +1,10 @@
+package com.movieFlix.entity.dto;
+
+import lombok.Builder;
+
+@Builder
+public record CategoryResponse(
+        Long id,
+        String name
+) {
+}
