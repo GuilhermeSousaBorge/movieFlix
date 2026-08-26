@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: db-movie-flix
+    environment:
+      POSTGRES_DB: movie_flix
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "6000:5432"
+    volumes:
+      - movie_flix_data:/var/lib/postgresql/data
+
+volumes:
+  movie_flix_data:
