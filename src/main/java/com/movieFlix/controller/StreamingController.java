@@ -20,9 +20,11 @@ public class StreamingController {
     private final StreamingService service;
 
     @PostMapping
-    public ResponseEntity<StreamingResponse> addStreaming(@RequestBody StreamingRequest streamingRequest) {
-        Streaming newCategory = service.create(streamingRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body(StreamingMapper.toStreamingResponse(newCategory));
+    public ResponseEntity<StreamingResponse> addStreaming(@RequestBody StreamingRequest payload) {
+        Streaming streaming = StreamingMapper.toEntity(payload);
+        Streaming savedStreaming = service.create(streaming);
+        StreamingResponse response = StreamingMapper.toStreamingResponse(savedStreaming);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
@@ -33,12 +35,16 @@ public class StreamingController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StreamingResponse> streamingDetails(@PathVariable Long id){
-        return ResponseEntity.ok(StreamingMapper.toStreamingResponse(service.getById(id)));
+        return service
+                .getById(id)
+                .map(streaming -> ResponseEntity.ok(StreamingMapper.toStreamingResponse(streaming)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateStreaming(@PathVariable Long id, @RequestBody StreamingRequest streamingRequest){
-        return ResponseEntity.ok(service.update(id, streamingRequest));
+    public ResponseEntity<Long> updateStreaming(@PathVariable Long id, @RequestBody StreamingRequest payload){
+        Streaming streaming = StreamingMapper.toEntity(payload);
+        return ResponseEntity.ok(service.update(id, streaming));
     }
 
     @DeleteMapping("/{id}")

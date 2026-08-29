@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,22 +23,16 @@ public class CategoryService {
         return repository.findAll();
     }
 
-    public Category getCategoryById(Long id){
-        return repository.findById(id).orElseThrow(() -> new InputMismatchException("Categoria nao encontrada"));
+    public Optional<Category> getCategoryById(Long id){
+        return repository.findById(id);
     }
 
     public Long updateCategory(Long id, Category payload){
-        Category category = getCategoryById(id);
-
-        category.setName(payload.getName());
-
-        return repository.save(category).getId();
+        return repository.save(payload).getId();
     }
 
     public void deleteCategory(Long id){
-        Category category = getCategoryById(id);
-
-        repository.delete(category);
+        repository.deleteById(id);
     }
 
 }

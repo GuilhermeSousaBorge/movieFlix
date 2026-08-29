@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,30 +17,23 @@ public class StreamingService {
 
     private final StreamingRepository repository;
 
-    public Streaming create(StreamingRequest payload){
-        Streaming streaming = StreamingMapper.toEntity(payload);
-        return repository.save(streaming);
+    public Streaming create(Streaming payload){
+        return repository.save(payload);
     }
 
     public List<Streaming> listAll(){
         return repository.findAll();
     }
 
-    public Streaming getById(Long id){
-        return repository.findById(id).orElseThrow(() -> new InputMismatchException("Categoria nao encontrada"));
+    public Optional<Streaming> getById(Long id){
+        return repository.findById(id);
     }
 
-    public Long update(Long id, StreamingRequest payload){
-        Streaming streaming = getById(id);
-
-        streaming.setName(payload.name());
-
-        return repository.save(streaming).getId();
+    public Long update(Long id, Streaming payload){
+        return repository.save(payload).getId();
     }
 
     public void delete(Long id){
-        Streaming streaming = getById(id);
-
-        repository.delete(streaming);
+        repository.deleteById(id);
     }
 }
