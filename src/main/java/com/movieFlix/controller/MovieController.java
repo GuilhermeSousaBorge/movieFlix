@@ -8,10 +8,7 @@ import com.movieFlix.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,11 +21,44 @@ public class MovieController {
 
     @PostMapping
     public ResponseEntity<MovieResponse> save(MovieRequest payload){
-       return ResponseEntity.status(HttpStatus.CREATED).body(MovieMapper.toMovieResponse(service.save(payload)));
+        Movie movie = MovieMapper.toEntity(payload);
+        Movie savedMovie = service.save(movie);
+        MovieResponse response = MovieMapper.toMovieResponse(savedMovie);
+       return ResponseEntity
+               .status(HttpStatus.CREATED)
+               .body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<MovieResponse>> findAll(){
-        return ResponseEntity.ok(service.findAll().stream().map(MovieMapper::toMovieResponse).toList());
+        List<MovieResponse> responseList = service.findAll().stream().map(MovieMapper::toMovieResponse).toList();
+        return ResponseEntity.ok(responseList);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieResponse> findById(@PathVariable Long id){
+        return service
+                .findById(id)
+                .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
+                .orElse(ResponseEntity.notFound().build());
+
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieResponse> update(@PathVariable Long id, @RequestBody MovieRequest payload){
+        return service.update(id, MovieMapper.toEntity(payload))
+                .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> search(@RequestParam Long category){
+        return ResponseEntity.ok(service.findByCategory(category).stream().map(MovieMapper::toMovieResponse).toList());
     }
 }
