@@ -4,6 +4,7 @@ import com.movieFlix.entity.Category;
 import com.movieFlix.entity.dto.CategoryResponse;
 import com.movieFlix.mapper.CategoryMapper;
 import com.movieFlix.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class CategoryController {
     private final CategoryService service;
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> addCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryResponse> addCategory(@Valid @RequestBody Category category) {
         Category newCategory = service.createCategory(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoryMapper.toCategoryResponse(newCategory));
     }
@@ -39,7 +40,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Long> updateCategory(@PathVariable Long id, @RequestBody Category category){
+    public ResponseEntity<Long> updateCategory(@PathVariable Long id, @Valid @RequestBody Category category){
         return ResponseEntity.ok(service.updateCategory(id, category));
     }
 
