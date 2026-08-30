@@ -51,3 +51,7 @@ management:
   endpoint:
     health:
       show-details: always
+
+movieflix:
+  security:
+    secret: "minha-secret-muito-secreta"
